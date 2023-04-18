@@ -1,14 +1,12 @@
-#
-#
-#
+
 attachment::att_amend_desc()
-golem::add_module(name = "name_of_module1", with_test = TRUE)
+golem::add_module(name = "settings", with_test = F)
 golem::add_module(name = "name_of_module2", with_test = TRUE)
-golem::add_fct("helpers", with_test = TRUE)
-golem::add_utils("helpers", with_test = TRUE)
+golem::add_fct("customfunctions", with_test = F)
+golem::add_utils("agentmanagement", with_test = F)
 golem::add_js_file("script")
 golem::add_js_handler("handlers")
-golem::add_css_file("custom")
+golem::add_css_file("custom",open = T)
 golem::add_sass_file("custom")
 usethis::use_data_raw(name = "my_dataset", open = FALSE)
 usethis::use_test("app")

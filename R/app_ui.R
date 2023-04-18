@@ -3,15 +3,63 @@
 #' @param request Internal parameter for `{shiny}`.
 #'     DO NOT REMOVE.
 #' @import shiny
+#' @importFrom shinydashboard dashboardBody tabItem tabItems
+#' @importFrom shinydashboardPlus dashboardPage dashboardHeader dashboardSidebar dashboardFooter
+#' @importFrom shinyEffects setShadow
+#' @importFrom shinymanager secure_app
+#' @import waiter
+#' @import shinytoastr
+#' @importFrom  shinyanimate withAnim
+#' @importFrom shinyjs useShinyjs
 #' @noRd
-app_ui <- function(request) {
+ui <- function(request) {
   tagList(
     golem_add_external_resources(),
-    fluidPage(
-      h1("collectoR")
+    tagList(
+      useToastr(),
+      withAnim(),
+      useShinyjs(),
+      setShadow(class = "info-box"),
+      setShadow(class = "box"),
+      setShadow(class = "stat-card"),
+      setShadow(class = "colection_vs_targets"),
+      setShadow(class = "cohort_analysis"),
+      setShadow(class = "full-recoverd"),
+      setShadow(class = "partial-recovered"),
+      setShadow(class = "allocation_count"),
+      lapply(strsplit("team_rank sub-topic full-recoverd partial-recovered allocation_count info-box box stat-card colection_vs_targets cohort_analysis"," ")[[1]],
+             animate_entrace),
+
+      # animate_entrace("stat-card"),
+      fluidRow(class = "orgtitle",
+               col_6(class = "text-section",
+                     img(class="logo-img bounce-in-top",src="static/images/logo.png"),
+                     h3(class="logo-text focus-in-contract-bck ","aisha Microfinance Bank")
+               ),
+               col_4(class = "date-section",
+                     tags$p(
+                       class = "date",
+                       datepanel())
+               ),
+               col_2(class = "user_panel","Users")
+      ),
+      dashboardPage(skin = "purple",
+                    options = list(sidebarExpandOnHover = TRUE),
+                    # preloader = list(html = tagList(spin_dots(), "Welcome ...")),
+                    preloader = list(html = tagList(img(class="intro_image",src="www/collectoR.png"))
+                                     ),
+                    scrollToTop = T,
+                    header = dashboardHeader(title = "LoanRecovery 2",disable = F,fixed = F),
+                    sidebar = dashboardSidebar(collapsed = T,sidebar_UI("sidebar")),
+                    body = dashboardBody(body_ui()),
+                    footer = dashboardFooter(left = "copyright 2023:Maisha Microfinance Bank"),
+                    title = "Debt Collection"
+      )
+
     )
   )
 }
+app_ui <- shinymanager::secure_app(ui)
 #' Add external Resources to the Application
 #'
 #' This function is internally used to add external
@@ -26,7 +74,7 @@ golem_add_external_resources <- function() {
     app_sys("app/www")
   )
   tags$head(
-    favicon(),
+    favicon(ext = 'png'),
     bundle_resources(
       path = app_sys("app/www"),
       app_title = "collectoR"

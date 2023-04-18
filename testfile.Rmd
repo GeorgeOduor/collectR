@@ -1,0 +1,45 @@
+---
+title: ''
+author: ''
+date: ''
+output:
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Our Ref: CK/LIT-DC/MMFBL/1/2023\
+Date: 16th February, 2023
+
+Your Ref: TBA <!--# kjh -->
+
+Name:
+
+ID Number:
+
+Contact:
+
+Dear Sir/madam,
+
+[**RE: DEMAND FOR KENYA SHILLINGS .......ONLY (KSHS..................MFANISI LOAN OWED TO MAISHA MICROFINANCE BANK LIMITED**]{.underline}
+
+We refer to the above matter, in which we act for Maisha Microfinance Bank Limited (our client) who has instructed us to address you as hereunder.
+
+Our client informs us that on the ........, you applied for a Short Term **M-FANISI** loan on your mobile phone (\*\*\*\*\*\*\*\*\*\*) an amount of of Kenya Shillings ......Only (Kshs. ...... /=) was advanced to you on the same day . It was a fundamental term of the loan agreement that the loan amount was recoverable within a period of ...... (..) Months, the last date of repayment being ....... and much more governed by short-term loan policy of our client.
+
+Our client informs us that to date you have failed, refused and/or neglected to pay the loaned amount plus the interests accrued thereon and as such you owe our client the balance sum of Kenya Shillings ... Only (Kshs...../=). Despite numerous demands and notices, you have failed, refused and/or neglected to pay the amount due. Your actions have caused our client tremendous loss and damage.
+
+OUR INSTRUCTIONS are to demand from you, which we hereby do, that you pay the sum of Kenya Shillings ...... Only (Kshs. .../=) by dialing USSD \*281# , Download M-Fanisi APP from play store or use playbill 499555 and use your mobile number as the account number to deposit the balance owed to our client and send to us the proof of payment within Seven (7) DAYS from the date hereof.
+
+TAKE NOTICE that unless you pay the sum of Kenya Shillings .... Only (Kshs. .../=) and send to us the proof of payment within Seven (7) DAYS from the date hereof we have peremptory instructions to institute against you all measures necessary to recover the outstanding amount without any further reference to you at your peril as to attendant costs and further damages as we may take liberty to demand.
+
+PLEASE TAKE FURTHER NOTICE THAT your account shall keep on accruing interest until the payment is made in full and that the recovery costs incurred shall be billed to your account. Be so advised that, no further reminders will be sent to you and that any proposals made, if accepted, and or any part-payment or installments paid and accepted by our client shall not constitute a waiver of this notice and any proposals made and installments paid will be without prejudice to our client's rights and remedies in law. Nothing in this letter should be construed as a waiver of our client's rights and remedies in law notwithstanding the Demand Period.
+
+We trust this shall not be necessary and look forward to receiving your positive response within the aforementioned deadline.
+
+Yours faithfully, CHEGE KIBATHI AND COMPANY ADVOCATES, LLP
+
+DENNIS JUMA

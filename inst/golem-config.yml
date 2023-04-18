@@ -1,8 +1,16 @@
 default:
-  golem_name: collectR
+  golem_name: collectoR
   golem_version: '2'
   app_prod: no
 production:
   app_prod: yes
 dev:
   golem_wd: !expr here::here()
+misc:
+  year: '2023'
+  custodian: Maisha Microfinance Bank
+database:
+  username: George
+  pswd: '5'
+hashkey:
+  key : "maishabank2023"

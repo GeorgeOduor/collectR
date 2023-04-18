@@ -9,7 +9,7 @@
 #'
 #' @noRd
 app_sys <- function(...) {
-  system.file(..., package = "collectR")
+  system.file(..., package = "collectoR")
 }
 #' Read App Config
 #'
