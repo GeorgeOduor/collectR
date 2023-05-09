@@ -70,6 +70,10 @@ dbExecute(db_con,.)
 #     dbExecute(db_con,.)
 
 
+
+
+
+
 'ALTER TABLE
     "t_Userpermissions" ADD CONSTRAINT "t_userpermissions_permission_id_foreign"
     FOREIGN KEY("permission_id") REFERENCES
@@ -83,3 +87,14 @@ dbExecute(db_con,.)
 '%>%
     dbExecute(db_con,.)
 
+# allocatiion engine ------------------------------------------------------
+# dbExecute(db_con,'DROP TABLE IF EXISTS "t_Repayments" CASCADE')
+dbSendQuery(db_con,
+                   "CREATE TABLE IF NOT EXISTS Repayments (
+                   ID SERIAL PRIMARY KEY,
+                   ClientID varchar(10),
+                   AccountID varchar(14),
+                   LoanSeries int,
+                   Amount_Paid numeric,
+                   RepaymentDate date
+                 )")

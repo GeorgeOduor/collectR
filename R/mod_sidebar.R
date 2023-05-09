@@ -34,23 +34,24 @@ sidebar_Server <- function(id) {
                              #     icon = icon("chart-line"),
                              #     tabName = "agent_performance"
                              # ),
-                             # menuItem(
-                             #     text = "Client Information",
-                             #     icon = icon("user"),
-                             #     tabName = "clientprofile"
-                             # ),
                              menuItem(
-                                 text = "Admin",
-                                 icon = icon("dashboard"),
-                                 menuSubItem("Agents Management", tabName = "agentmanagement")
-                                 # menuSubItem("Allocation", tabName = "allocation_tab",),
-                                 # menuSubItem("Performance Update", tabName = "performance")
+                                 text = "Client Information",
+                                 icon = icon("user"),
+                                 tabName = "clientprofile"
                              ),
                              menuItem(
-                                 text = "Settings",
+                                 text = "Admin",
                                  icon = icon("gears"),
-                                 tabName = "settings"
+                                 # menuSubItem("Agents Management", tabName = "agentmanagement")
+                                 # menuSubItem("Allocation", tabName = "allocation_tab",),
+                                 menuSubItem("Performance Update", tabName = "performance"),
+                                 menuSubItem(
+                                     text = "Settings",
+                                     icon = icon("gears"),
+                                     tabName = "settings"
+                                 )
                              )
+
 
 
                          )

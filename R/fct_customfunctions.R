@@ -32,9 +32,21 @@ check_creds <- function() {
         req <- dbSendQuery(con, req)
         res <- dbFetch(req) %>% invisible()
 
+        user_permissions <- tbl(db_con,"t_Userpermissions") %>% filter(user_id == !!res$id) %>%
+            inner_join(tbl(db_con,"t_Permissions") %>% select(id,permission_name,permission_type),by=c('permission_id'='id')) %>%
+            select(permission_id,permission_name,permission_type) %>%
+            collect()
+        grp_permissions <- tbl(db_con,"t_GroupPermissions") %>% filter(group_id == !!res$usergroup) %>%
+            inner_join(tbl(db_con,"t_Permissions") %>% select(id,permission_name,permission_type),by=c('permission_id'='id')) %>%
+            select(-createdon,-group_id,-id) %>%
+            collect()
+        permissions <-  bind_rows(user_permissions,grp_permissions) %>%
+            distinct(permission_id,.keep_all = T) %>%
+            as.list()
+
         if (nrow(res %>% collect()) > 0) {
-            # merge with the groups to return the permitions
-            list(result = TRUE, user_info = res %>% as.list())
+            # merge with the groups to return the permissions
+            list(result = TRUE, user_info = append(res %>% as.list(),list(permissions=permissions)) )
         } else {
             list(result = FALSE)
         }
@@ -47,6 +59,7 @@ check_creds <- function() {
 #' @param n number of inputs to be created
 #' @param id ID prefix for each input
 #' @noRd
+
 shinyInput <- function(FUN, n ,id, ...) {
 
     # for each of n, create a new input using the FUN function and convert
@@ -55,6 +68,9 @@ shinyInput <- function(FUN, n ,id, ...) {
         as.character(FUN(paste0(id, i), ...))
     }, character(1))
 
+}
+shinyInput2 <- function(FUN, id, ...) {
+    as.character(FUN(id, ...))
 }
 
 

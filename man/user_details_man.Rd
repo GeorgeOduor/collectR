@@ -4,7 +4,7 @@
 \alias{user_details_man}
 \title{Display a modal dialog for managing user details}
 \usage{
-user_details_man(ns, type = "new", ...)
+user_details_man(ns, type = "new", agent = "internal", ...)
 }
 \arguments{
 \item{ns}{The namespace of the Shiny app.}

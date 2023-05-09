@@ -24,7 +24,7 @@ mod_settings_ui <- function(id){
           radioGroupButtons(
             inputId = ns("modules"),
             label = "",
-            choices = c("Permisions","Groups", "Users", "SMS","CBS Authentication"),width = "100%",
+            choices = c("Permisions","Groups", "Users", "Collection Utils","CBS Authentication"),width = "100%",
             status = "success",direction = "vertical",size = "xs",justified = T,individual = T
           )
         ),
@@ -41,6 +41,7 @@ mod_settings_ui <- function(id){
 #' @importFrom tibble as_tibble tibble enframe rowid_to_column
 #' @importFrom shinyWidgets show_toast ask_confirmation
 #' @importFrom shinydashboardPlus accordion accordionItem
+#' @importFrom purrr map_df map
 #'
 #' @noRd
 mod_settings_server <- function(id,authentication){
@@ -265,6 +266,52 @@ mod_settings_server <- function(id,authentication){
         )
 
     })
+    agents = reactive({
+      dbtrigger$depend()
+      tbl(db_con,"t_Agents") %>%
+        select(id,name,start) %>%
+        as_tibble() %>%
+        rowid_to_column() %>%
+        bind_cols(
+          tibble(View = shinyInput(FUN = actionButton,
+                                   style="color: #fff; background-color: #337ab7; border-color: #2e6da4",
+                                   n = nrow(.),id = 'edit_agent_',icon=icon("eye"),
+                                   class="action-button bttn bttn-material-flat bttn-xs bttn-success bttn-no-outline",
+                                   label = "",onclick = 'Shiny.setInputValue(\"settings_1-edit_agent\", this.id, {priority: \"event\"})'),
+                 Delete = shinyInput(FUN = actionButton,
+                                     style="color: #fff; background-color: red; border-color: #2e6da4",
+                                     n = nrow(.),id = 'delete_agent_',icon = icon("trash"),
+                                     class = "action-button bttn bttn-material-flat bttn-xs bttn-success bttn-no-outline",
+                                     label = "",onclick = 'Shiny.setInputValue(\"settings_1-delete_agent\", this.id, {priority: \"event\"})')
+          )
+        )
+
+    })
+    agent_contacts = reactive({
+      # req(input$agent_name)
+      selected_row  <- as.numeric(strsplit(input$edit_agent,"_")[[1]][3])
+      agent_info  <- agents() %>% filter(row_number() == selected_row) %>% as.list()
+      dbtrigger$depend()
+      tbl(db_con,"t_Agent_Contacts") %>%
+        filter(agent_id == !!agent_info$id) %>%
+        select(id,agent_id,name,mobilenumber,emailaddress,ismain_contact) %>%
+        as_tibble() %>%
+        rowid_to_column() %>%
+        bind_cols(
+          tibble(View = shinyInput(FUN = actionButton,
+                                   style="color: #fff; background-color: #337ab7; border-color: #2e6da4",
+                                   n = nrow(.),id = 'edit_agent_contact_',icon=icon("eye"),
+                                   class="action-button bttn bttn-material-flat bttn-xs bttn-success bttn-no-outline",
+                                   label = "",onclick = 'Shiny.setInputValue(\"settings_1-edit_agent_contact\", this.id, {priority: \"event\"})'),
+                 Delete = shinyInput(FUN = actionButton,
+                                     style="color: #fff; background-color: red; border-color: #2e6da4",
+                                     n = nrow(.),id = 'delete_agent_contact_',icon = icon("trash"),
+                                     class = "action-button bttn bttn-material-flat bttn-xs bttn-success bttn-no-outline",
+                                     label = "",onclick = 'Shiny.setInputValue(\"settings_1-delete_agent_contact\", this.id, {priority: \"event\"})')
+          )
+        )
+
+    })
     # add new users
     observeEvent(input$add_user,{
       permisions <- tbl(db_con,"t_Permissions")
@@ -280,6 +327,7 @@ mod_settings_server <- function(id,authentication){
 
     })
     observeEvent(input$save_new_user,{
+
       custom_db_actions(
         action = {
           user_group       <- tbl(db_con,'t_UserGroups') %>% filter(name == !!input$user_category) %>% pull(id)
@@ -441,9 +489,125 @@ mod_settings_server <- function(id,authentication){
       ),successmessage = "User Deleted Successfuly")
       dbtrigger$trigger()
     })
+    #
+    # Agents edit details UI----
+    observeEvent(input$edit_agent,{
+      usergroups <- tbl(db_con,"t_UserGroups")
+      permisions <- tbl(db_con,"t_Permissions")
+      selected_row  <- as.numeric(strsplit(input$edit_agent,"_")[[1]][3])
+      agent_info    <- agents() %>% filter(row_number() == selected_row) %>% as.list()
+      # selected_perms
+      showModal(
+        ui = modalDialog(title = "Edit Agent Details",footer = modal_footer(),
+                         size = 'm',easyClose = T,
+                         fluidRow(class="agent_edit_container",
+                           col_12(
+                             col_3(textInput(ns('agent_id'),"DCA IS",
+                                             value = agent_info$id,
+                                             width = "100%")),
+                             col_6(textInput(ns('agent_name'),"DCA Name",
+                                                  value = agent_info$name,
+                                                  width = "100%")),
+                             col_3(
+                               actionBttn(ns("add_contact"),"New Contact",style = "material-flat",status = "success" ,icon = icon("plus")
+                               )
+                             )
+                             ),
+                           col_12(
+                             class="dca_contacts",DTOutput(ns("agent_contacts"))
+                           )
+                           # col_3()
+                           )
+                         )
+        )
+    })
+    observeEvent(input$edit_agent_contact,{
+        selected_row  <- as.numeric(gsub("[a-z]|_","","edit_agent_contact"))
+        contact_info     <- agent_contacts() %>% filter(row_number() == selected_row) %>% as.list()
+        showModal(ui = agent_contact_change_ui(ns,contact_info))
+      })
+    observeEvent(input$save_contact_edit,{
+      agent_name     = input$agent_name
+      mobilenumber   = input$mobilenumber
+      emailaddress   = input$emailaddress
+      ismain_contact = input$ismain_contact
+      contact_id       = as.numeric(input$contact_id)
+      custom_db_actions(action = {
+        update_clause(db_con, table = "t_Agent_Contacts",
+                      what = c("name", "mobilenumber", "emailaddress", "ismain_contact"),
+                      by = c(agent_name, mobilenumber, emailaddress, ismain_contact),
+                      where = "id",
+                      is = contact_id, exec = T)
+      },successmessage = paste(input$agent_name,"contact details updated successfully!")
+      )
+      dbtrigger$trigger()
+    })
+    observeEvent(input$add_contact,{
+      selected_row  <- as.numeric(gsub("[a-z]|_","","edit_agent_contact"))
+      # contact_info     <- agent_contacts() %>% filter(row_number() == selected_row) %>% as.list()
+      # print(contact_info)
+      showModal(ui = agent_contact_change_ui(ns,list(),"new",input$agent_id))
+    })
+    observeEvent(input$save_contact_new,{
+      agent_name     = input$agent_name
+      mobilenumber   = input$mobilenumber
+      emailaddress   = input$emailaddress
+      ismain_contact = ifelse(input$ismain_contact == "yes",T,F)
+      agent_id     = as.numeric(input$agent_id)
+      custom_db_actions(
+        action = {
+          insert_clause(db_con, table = "t_Agent_Contacts",
+                        values = c(agent_id,agent_name,mobilenumber,emailaddress,ismain_contact,as.character(Sys.Date())),
+                      cols = c("agent_id","name","mobilenumber","emailaddress","ismain_contact","created_on"), type = 2,
+                      exec = T)},
+        successmessage = paste(agent_name,"contact information added successfully!")
+        )
+      dbtrigger$trigger()
+
+    })
+    observeEvent(input$delete_agent_contact,{
+      delete_confirm(text = span(icon('thumbs-down'), "No"),
+                     delete_id = "delete_agent_contact_details",
+                     ns = ns)
+    })
+    observeEvent(input$delete_agent_contact_details,{
+      selected_row <- as.numeric(gsub("[a-z]|_","","delete_agent_contact"))
+      # contact_info <- agent_contacts() %>% filter(row_number() == selected_row) %>% as.list()
+      delete_clause(con = db_con,
+                    table = "t_Agent_Contacts",
+                    where = "id",is = input$agent_id)
+      dbtrigger$trigger()
+      removeModal()
+    })
+    # delete_ agent
+    observeEvent(input$delete_agent,{
+         delete_confirm(text = span(icon('thumbs-down'), "No"),
+                     delete_id = "delete_agent_details",
+                     ns = ns)
+    })
+    observeEvent(input$delete_agent_details,{
+      selected_row  <- as.numeric(gsub("[a-z]|_","",input$delete_agent))
+      agents <- agents() %>%  filter(row_number() == selected_row) %>% as.list()
+      custom_db_actions(action =  delete_clause(con = db_con,table = "t_Agents",
+                                                where = "id",is = agents$id,exec = T
+      ),successmessage = "User Deleted Successfuly")
+      dbtrigger$trigger()
+    })
     # render users
-    output$users_data <- renderDT({users()},escape = F, selection = "none",options = list(
+    output$users_data <- renderDT({users() %>% select(-id,-rowid)},escape = F, selection = "none",options = list(
       columnDefs = list(list(className = 'dt-center', targets = c(1,4:5)))
+    ))
+    # render agents
+    output$agents_data <- renderDT({agents() %>% select(-id,-rowid)},escape = F, selection = "none",options = list(
+      columnDefs = list(list(className = 'dt-center', targets = c(1,3:4)))
+    ))
+    # render agents contacts
+    output$agent_contacts <- renderDT({agent_contacts() %>% select(-id,-rowid)},
+                                      escape = F, selection = "none",extensions = 'FixedColumns',
+                                      options = list(
+                                        fixedColumns = list(rightColumns = 2),
+                                        scrollX = TRUE,
+                                        columnDefs = list(list(className = 'dt-center', targets = c(1,3:4)))
     ))
     # user password reset
     output$password_manager_ui <- renderUI({
@@ -476,6 +640,57 @@ mod_settings_server <- function(id,authentication){
       )
 
     })
+    # dynamicaly add dca contact entry UI
+    # Insert a new contact UI when the "add_another" button is clicked
+    observeEvent(input$add_another, {
+      # startAnim(session, paste0(".list-item-", gsub("remove-", "", input$remove)),
+      #           'fadeInRightBig')
+      insertUI(selector = ".dca_contacts_list",
+               # where = 'afterEnd',
+               ui = dca_contact_ui(ns, input$add_another))
+    })
+    # Remove the corresponding contact UI when the "remove" button is clicked
+    observeEvent(input$remove, {
+      removeUI(
+        selector = paste0(".list-item-",gsub("remove-","",input$remove)),
+        immediate = FALSE
+      )
+    })
+    observeEvent(input$save_dca,{
+      custom_db_actions(
+        action = {
+        # save the agent name to respective table
+        req(input$agent_name)
+        insert_clause(db_con,
+                      table = 't_Agents',
+                      values = c(input$agent_name,as.character(Sys.Date())),
+                      cols = c("name","start"),exec = T,type = 2)
+        # save contacts
+        tryCatch(
+          expr = {
+            contacts <- collect_contacts(input,input$add_another)
+          if (nrow(contacts) > 0) {
+            agent_id <- tbl(db_con,"t_Agents") %>%
+              filter(name == !!input$agent_name) %>%
+              pull(id)
+            contacts <- contacts %>%
+              mutate(agent_id = agent_id)
+            dbWriteTable(db_con,"t_Agent_Contacts",contacts,append=T)
+          }
+        },
+          error = function(e){
+            delete_clause(db_con,table = "t_Agents",where = "name",
+                          is = input$agent_name,exec = T)
+            stop(e)
+          }
+        )
+      },
+      successmessage = paste(input$agent_name,"details saved successfully!")
+      )
+      dbtrigger$trigger()
+
+    })
+    # collection utils ----
 
     # render respective UI -----
     output$modles_ui <- renderUI({
@@ -508,7 +723,12 @@ mod_settings_server <- function(id,authentication){
               'Users' = {
                 col_12(class="settings_panel",
                        col_10(
-                         div(class = "users_data_view",DTOutput(ns("users_data")))
+                         accordion(id="usercategories",
+                                   accordionItem(title = "Internal Debt Collectors",status = "success",solidHeader = T,collapsed = F,
+                                                 div(class = "users_data_view",DTOutput(ns("users_data")))),
+                                   accordionItem(title = "External Debt Collectors",status = 'success',solidHeader = T,collapsed = T,
+                                                 div(class = "users_data_view",DTOutput(ns("agents_data")))
+                                                 ))
                        ),
                        col_2(class = "settings_panel-actionpanel",
                              actionBttn(ns("add_user"),"Add New",icon = icon("plus"),size = "xs",block = T,
@@ -516,7 +736,14 @@ mod_settings_server <- function(id,authentication){
                              )
                        )
               },
-              'SMS' = {"SMS UI"},
+              'Collection Utils' = {
+                accordion(id = "collection_utils",
+                          accordionItem(title = "SMS Templates",status = "success",solidHeader = T,collapsed = F,
+
+                                        ),
+                          accordionItem(title = "Customer Feedback Classification",status = "success",solidHeader = T,collapsed = T)
+                          )
+              },
               'CBS Authentication' = {"cbs UI"},
       )
     })

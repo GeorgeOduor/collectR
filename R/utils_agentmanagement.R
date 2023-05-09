@@ -47,8 +47,7 @@ new_agent_details_ui <- function(ns,agents) {
                     title = "External Debt Collectors",
                     icon = icon("briefcase"),
                     col_2(class = "image",
-                          p(class =
-                                "icon-image", icon("briefcase"))),
+                          p(class ="icon-image", icon("briefcase"))),
                     col_10()
                 )
             )

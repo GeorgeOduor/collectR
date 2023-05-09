@@ -11,6 +11,7 @@
 #' @import shinytoastr
 #' @importFrom  shinyanimate withAnim
 #' @importFrom shinyjs useShinyjs
+#' @import shiny.pwa
 #' @noRd
 ui <- function(request) {
   tagList(
@@ -32,6 +33,7 @@ ui <- function(request) {
 
       # animate_entrace("stat-card"),
       fluidRow(class = "orgtitle",
+               # pwa("http://127.0.0.1:2023/", output = "inst/app/www/"),
                col_6(class = "text-section",
                      img(class="logo-img bounce-in-top",src="static/images/logo.png"),
                      h3(class="logo-text focus-in-contract-bck ","aisha Microfinance Bank")

@@ -181,7 +181,7 @@ clientProfile_Server <- function(id) {
                                tableOutput(ns("loan_listing"))
                                )
                         ),
-                    box(title = "Repayment Trend",width = 6,solidHeader = T,status = "success",
+                    box(title = "Repayment Trend",width = 6,solidHeader = T,status = "success"
                         )
                   )
                 },
@@ -197,8 +197,7 @@ clientProfile_Server <- function(id) {
                                                                  choices = c("Call Agent",
                                                                              "Mfanisi System"),
                                                                  width = "100%")),
-                                                 div(class="stats",
-                                                 )
+                                                 div(class="stats")
                                            ),
                                            col_10(class="listing",
                                                   shinipsum::random_DT(6,4,type = "random"))
@@ -208,7 +207,7 @@ clientProfile_Server <- function(id) {
                                            box(title="Action points",width=3,solidHeader =T,status="success",
                                                actionBttn(ns("recal"),"Recal",icon = icon("undo"),style = "material-flat",size = "xs",block = T,color = "danger"),
                                                hr(),
-                                               actionBttn(ns("realocate"),"Realocate",icon = icon("redo"),style = "material-flat",size = "xs",block = T,color = "success"),
+                                               actionBttn(ns("realocate"),"Realocate",icon = icon("redo"),style = "material-flat",size = "xs",block = T,color = "success")
                                            )
                                   )
                       )

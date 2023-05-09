@@ -263,77 +263,190 @@ user_permissions <- function(ns,group_auth,user_auth,selected_perms=NULL,fun="ed
 #' @param ... Additional arguments to pass to the function.
 #' @return A Shiny modal dialog.
 #'
-user_details_man <- function(ns,type="new",...) {
+user_details_man <- function(ns,type="new",agent="internal",...) {
     kwargs <- list(...)
-    modalDialog(
-        tagList(
-            tabsetPanel(
-            type = 'pills',
-            tabPanel(title = "User details",
-                     div(
-                         class = 'tabcontent',
-                         col_6(textInput(
-                             ns("first_name"),
-                             "First Name",
-                             placeholder = "John",
-                             width = "100%",value = kwargs$first_name
-                         )),
-                         col_6(textInput(
-                             ns("last_name"),
-                             "Last Name",
-                             placeholder = "Doe",
-                             width = "100%",value = kwargs$last_name
-                         )),
-                         col_12(
-                             textInput(
-                                 ns("mobileno"),
-                                 "Mobile Number",
-                                 placeholder = "2547XXXXXXXX",
-                                 width = "100%",value = kwargs$mobile
-                             ),
-                             textInput(
-                                 ns("email"),
-                                 "Email",
-                                 placeholder = "john.doe@example.com",
-                                 width = "100%",value = kwargs$email
-                             ),
-                             selectInput(
-                                 ns("user_category"),
-                                 "User Category",
-                                 width = "100%",
-                                 choices = kwargs$choices,
-                                 selected = kwargs$user_category
-                             )
-                         )
+    new_ui <- tabsetPanel(
+        type = 'pills',
+        tabPanel(title = "User details",
+                 div(
+                     class = 'tabcontent',
+                     col_6(textInput(
+                         ns("first_name"),
+                         "First Name",
+                         placeholder = "John",
+                         width = "100%",value = kwargs$first_name
                      )),
-            tabPanel(title = "Permissions",
-                     tagList(# uiOutput(ns("permissions_list_ui"))
-                         user_permissions(ns,
-                                          group_auth =  NULL,
-                                          fun=kwargs$fun,
-                                          selected_perms = kwargs$selected_perms,
-                                          user_auth = kwargs$user_auth)
-                     )
-                     ),
-            if (type == "edit") {
-                tabPanel(title = "Password Management",
-                         radioGroupButtons(
-                             inputId = ns("paswd_manager"),
-                             label = "",
-                             choices = c("Reset Password","Force password Change"),
-                             status = "success",size = "xs"
+                     col_6(textInput(
+                         ns("last_name"),
+                         "Last Name",
+                         placeholder = "Doe",
+                         width = "100%",value = kwargs$last_name
+                     )),
+                     col_12(
+                         textInput(
+                             ns("mobileno"),
+                             "Mobile Number",
+                             placeholder = "2547XXXXXXXX",
+                             width = "100%",value = kwargs$mobile
                          ),
-                         uiOutput(ns('password_manager_ui'))
+                         textInput(
+                             ns("email"),
+                             "Email",
+                             placeholder = "john.doe@example.com",
+                             width = "100%",value = kwargs$email
+                         ),
+                         selectInput(
+                             ns("user_category"),
+                             "User Auth Category",
+                             width = "100%",
+                             choices = kwargs$choices,
+                             selected = kwargs$user_category
+                         )
+                     )
+                 )),
+        tabPanel(title = "Permissions",
+                 tagList(# uiOutput(ns("permissions_list_ui"))
+                     user_permissions(ns,
+                                      group_auth =  NULL,
+                                      fun=kwargs$fun,
+                                      selected_perms = kwargs$selected_perms,
+                                      user_auth = kwargs$user_auth)
+                 )
+        ),
+        if (type == "edit") {
+            tabPanel(title = "Password Management",
+                     radioGroupButtons(
+                         inputId = ns("paswd_manager"),
+                         label = "",
+                         choices = c("Reset Password","Force password Change"),
+                         status = "success",size = "xs"
+                     ),
+                     uiOutput(ns('password_manager_ui'))
+            )
+        }
+    )
+    external_dca <- tagList(
+        textInput(ns("agent_name"),label = "DCA Name",value = kwargs$name,width = '100%'),
+        fluidRow(
+            class = "dca_contacts",
+            col_10(class = "dca_contacts_list",
+                   div(class = 'title-row', h4("Contacts")),
+                   dca_contact_ui(ns)
+                   ),
+            col_2(class="add_remove",
+                  actionBttn(ns("add_another"),"Add",icon = icon('plus'),style = 'material-flat',size = "xs",color = "success",block = T),
+                  actionBttn(ns("save_dca"),"Save",icon = icon('plus'),style = 'material-flat',size = "xs",color = "success",block = T)
+                  )
+            )
+
+    )
+    modalDialog(
+        if (type == "new") {
+            tagList(
+                tabsetPanel(type = "pills",
+                    tabPanel(title = "Internal Debt Collectors",icon = icon('users'),
+                             div(class = "tab_content",new_ui)
+                             ),
+                    tabPanel(title = "External Debt Collectors",icon = icon('briefcase'),
+                             div(class = "tab_content",external_dca)
+                             )
                 )
-            }
-        )),
+            )
+        }else{
+            new_ui
+        },
         title = ifelse(type=='new',"Add new User Details","Edit User Details"),
         footer = modal_footer(),
-        size = "m",
+        size = "l",
         easyClose = T
     )
 }
 
+
+dca_contact_ui <- function(ns,id=0) {
+    tagList(
+        col_12(class=paste0("item-list text-focus-in list-item-",id),
+            col_10(
+                col_3(textInput(ns(paste0('dca_contact_name_',id)),"Name",width = '100%')),
+                  col_3(textInput(ns(paste0('dca_mobilenumber_',id)),"Mobile Number",width = '100%')),
+                  col_4(textInput(ns(paste0('dca_emailaddress_',id)),"Email Address",width = '100%')),
+                  col_2(textInput(ns(paste0('dca_ismaincontact_',id)),"Main Contact?",width = '100%',placeholder  = "Yes/No"))
+                ),
+            col_2(class = "btns",
+                  HTML(shinyInput2(
+                      actionButton,
+                      id = paste0("remove-", id),
+                      label = "",
+                      class = "removebutton",
+                      onclick = 'Shiny.setInputValue(\"settings_1-remove\", this.id, {priority: \"event\"})',
+                      icon = icon("minus")
+                  ))
+                  # actionBttn(ns(paste0("remove-",id)),"",icon = icon('minus'),style = 'material-circle',size = "xs",color = "danger",block = F)
+            )
+        )
+    )
+}
+
+agent_contact_change_ui <- function(ns,contact_info,type="edit",agent_id=NULL) {
+    modalDialog(title = ifelse(type == "edit",paste(contact_info[['name']],"Contact Information"),"New Contact Information"),
+                footer = modal_footer(),size = "m",easyClose = T,
+                fluidRow(class = 'agent_edit_container',
+                         col_9(
+                             if (type == "edit") {
+                                 col_6(textInput(ns('contact_id'),"Agent ID",value = contact_info[['id']],width = "100%"))
+                             }else{
+                                 col_6(textInput(ns('agent_id'),"Agent ID",value = agent_id,width = "100%"))
+                             },
+                             col_6(textInput(ns('agent_name'),"Agent Name",value = contact_info[['name']],width = "100%")),
+                             col_6(textInput(ns('mobilenumber'),"Agent Number",value = contact_info[['mobilenumber']],width = "100%")),
+                             col_6(textInput(ns('emailaddress'),"Agent Email Address",value = contact_info[['emailaddress']],width = "100%")),
+                             col_6(textInput(ns('ismain_contact'),"Is main Contact",value = contact_info[['ismain_contact']],width = "100%"))),
+                         col_3(
+                             actionBttn(ns(paste0("save_contact_",type)),"Submit",icon = icon("save"),style = "material-flat",color = 'success',size = 'xs',block = T)
+                         )
+                )
+    )
+}
+
+#' Collect formatted contact information from a list
+#'
+#' This function takes a list of contact information and the number of contacts in the list,
+#' and returns a data frame containing the formatted contact information for all contacts in the list.
+#'
+#' @param input A list containing contact information.
+#' @param id An integer specifying the number of contacts in the list.
+#'
+#' @return A data frame containing the formatted contact information for all contacts in the list.
+#' @importFrom reshape2 dcast
+#' @examples
+collect_contacts <- function(input,id) {
+    out <- seq(0,id) %>%
+        map_df(.f = function(x){
+            contact_name <- input[[paste0("dca_contact_name_", x)]]
+            mobile_number <- input[[paste0("dca_mobilenumber_", x)]]
+            email_address <- input[[paste0("dca_emailaddress_", x)]]
+            ismain_contact <- input[[paste0("dca_ismaincontact_", x)]]
+            out <- list(
+                'name' = contact_name,
+                'mobilenumber' = mobile_number,
+                'emailaddress' = email_address,
+                'ismain_contact' = ismain_contact
+                ) %>%
+                lapply(FUN = function(x){
+                ifelse(is.null(x),NA,x)
+                })%>%
+                enframe() %>%
+                dcast(.~name,value.var = 'value') %>%
+                mutate_all(unlist)%>%
+                mutate(
+                    created_on = as.character(Sys.Date()),
+                    ismain_contact = ifelse(tolower(ismain_contact) == "yes",T,F)) %>%
+                select(-".") %>%
+                filter(!is.na(contact_name),!is.na(emailaddress),emailaddress != "")
+        })%>%
+        distinct(emailaddress,.keep_all=T)
+    return(out)
+}
 #' Encrypt or decrypt a password
 #'
 #' @description This function encrypts or decrypts a given password using the \code{safer} package

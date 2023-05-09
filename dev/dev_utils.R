@@ -31,6 +31,61 @@ tibble(
                    value = .,
                    append = T)
 tbl(db_con,'t_Users')
+
+# dca table -------------------------------------------------------------
+dbExecute(db_con,'DROP TABLE IF EXISTS "t_Agents" CASCADE')
+'CREATE TABLE IF NOT EXISTS "t_Agents" (
+    id serial PRIMARY KEY,
+    name varchar (50) NOT NULL UNIQUE,
+    start DATE NOT NULL,
+    expire DATE
+);' %>%
+    dbExecute(db_con,.)
+# dbListTables(con_postgre) %>% map(~dbSendQuery(con_postgre,glue('DROP TABLE IF EXISTS "{.}"')))
+
+tibble(
+    name = "SaniExtra",
+    start = Sys.Date(),
+    ) %>% dbWriteTable(db_con,
+                   name = "t_Agents",
+                   value = .,
+                   append = T)
+tbl(db_con,'t_Agents')
+
+# dca contacts table -------------------------------------------------------------
+dbExecute(db_con,'DROP TABLE IF EXISTS "t_Agent_Contacts" CASCADE')
+
+'CREATE TABLE IF NOT EXISTS "t_Agent_Contacts" (
+    id serial PRIMARY KEY,
+    agent_id bigint NOT NULL,
+    name varchar (100) NOT NULL,
+    mobilenumber varchar(12),
+    emailaddress varchar(50) NOT NULL UNIQUE,
+    ismain_contact BOOLEAN NOT NULL,
+    created_on DATE NOT NULL
+);' %>%
+    dbExecute(db_con,.)
+# ,
+# FOREIGN KEY("agent_id"),
+# REFERENCES "t_Agents"("id")
+'ALTER TABLE "t_Agent_Contacts"
+ADD CONSTRAINT "t_Agent_Contacts_id_foreign"
+FOREIGN KEY("agent_id")
+REFERENCES "t_Agents"("id")
+ON DELETE CASCADE;
+'%>%
+    dbExecute(db_con,.)
+
+# dbListTables(con_postgre) %>% map(~dbSendQuery(con_postgre,glue('DROP TABLE IF EXISTS "{.}"')))
+
+tibble(
+    name = "SaniExtra",
+    start = Sys.Date(),
+) %>% dbWriteTable(db_con,
+                   name = "t_Agents",
+                   value = .,
+                   append = T)
+tbl(db_con,'t_Agents')
 ;# groups table ------------------------------------------------------------
 dbExecute(db_con,'DROP TABLE IF EXISTS "t_UserGroups"')
 'CREATE TABLE IF NOT EXISTS "t_UserGroups" (
@@ -39,14 +94,6 @@ dbExecute(db_con,'DROP TABLE IF EXISTS "t_UserGroups"')
     createdon DATE NOT NULL DEFAULT CURRENT_TIMESTAMP
 );' %>%
     dbExecute(db_con,.)
-tibble(
-    name = "SuperAdmin"
-) %>%
-    dbWriteTable(db_con,
-                   name = "t_UserGroups",
-                   value = .,
-                   append = T)
-tbl(db_con,'t_UserGroups')
 
 
 # permisions --------------------------------------------------------------
