@@ -5,7 +5,7 @@
 \title{Generate an SQL insert statement for a table
 Generate a DELETE SQL clause}
 \usage{
-delete_clause(con, table, where, is, exec = TRUE)
+delete_clause(con, table, where, is, all = FALSE, exec = TRUE)
 }
 \arguments{
 \item{con}{The database connection object.}

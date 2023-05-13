@@ -37,7 +37,7 @@ makereactivetrigger <- function() {
 #' @return If \code{exec = TRUE}, this function returns the result of the executed SQL DELETE statement. If \code{exec = FALSE}, this function returns a character string representing the SQL DELETE statement.
 #'
 
-delete_clause <- function(con, table, where, is, exec = TRUE) {
+delete_clause <- function(con, table, where, is, all=FALSE,exec = TRUE) {
 
     # Quote the table name and value
     table_quoted <- paste0('"', table, '"')
@@ -46,12 +46,21 @@ delete_clause <- function(con, table, where, is, exec = TRUE) {
     # Generate the SQL delete statement
     where_clause <- sprintf("%s = %s", where, where_quoted)
     sql <- sprintf("DELETE FROM %s WHERE %s", table_quoted, where_clause)
+    sql_all <- sprintf("DELETE FROM %s", table_quoted)
 
     # Execute or return the query string
     if (exec) {
-        DBI::dbExecute(con, sql)
+        if (all) {
+            DBI::dbExecute(con, sql_all)
+        }else{
+            DBI::dbExecute(con, sql)
+        }
     } else {
-        print(sql)
+        if (all) {
+            print(sql_all)
+        }else{
+            print(sql)
+        }
     }
 
 }

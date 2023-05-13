@@ -88,13 +88,45 @@ dbExecute(db_con,.)
     dbExecute(db_con,.)
 
 # allocatiion engine ------------------------------------------------------
-# dbExecute(db_con,'DROP TABLE IF EXISTS "t_Repayments" CASCADE')
+dbExecute(db_con,'DROP TABLE IF EXISTS "t_Repayment" CASCADE')
+dbSendQuery(db_con,'CREATE TABLE IF NOT EXISTS "t_Repayment" (
+                   "id" SERIAL PRIMARY KEY,
+                   "ClientID" varchar(10),
+                   "AccountID" varchar(14),
+                   "LoanSeries" int,
+                   "Amount_Paid" numeric,
+                   "RepaymentDate" date
+                 )')
+
+dbExecute(db_con,'DROP TABLE IF EXISTS "t_CollectionTrend" CASCADE')
+
 dbSendQuery(db_con,
-                   "CREATE TABLE IF NOT EXISTS Repayments (
-                   ID SERIAL PRIMARY KEY,
-                   ClientID varchar(10),
-                   AccountID varchar(14),
-                   LoanSeries int,
-                   Amount_Paid numeric,
-                   RepaymentDate date
-                 )")
+        'CREATE TABLE "t_CollectionTrend" (
+         "id" SERIAL PRIMARY KEY,
+         "RepaymentDate" DATE NOT NULL,
+         "Team" TEXT NOT NULL,
+         "Debt_Collector" TEXT NOT NULL,
+         "Channel" TEXT,
+         "Amount" REAL NOT NULL,
+         "RepaymentTrend" REAL,
+         "UpdatedBy" TEXT NOT NULL,
+         "Category" TEXT NOT NULL
+         )')
+
+
+dbExecute(db_con,'DROP TABLE IF EXISTS "t_EndOfMonthCollectionTrend" CASCADE')
+
+dbSendQuery(db_con,
+        'CREATE TABLE "t_EndOfMonthCollectionTrend" (
+         "id" SERIAL PRIMARY KEY,
+         "RepaymentDate" DATE NOT NULL,
+         "Team" TEXT NOT NULL,
+         "Debt_Collector" TEXT NOT NULL,
+         "Channel" TEXT,
+         "Amount" REAL NOT NULL,
+         "RepaymentTrend" REAL,
+         "UpdatedBy" TEXT NOT NULL,
+         "Category" TEXT NOT NULL
+         )')
+
+Category
