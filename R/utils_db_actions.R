@@ -41,10 +41,11 @@ delete_clause <- function(con, table, where, is, all=FALSE,exec = TRUE) {
 
     # Quote the table name and value
     table_quoted <- paste0('"', table, '"')
-    where_quoted <- if (is.character(is)) glue::glue("'{is}'") else is
+    is_quoted <- if (is.character(is)) glue::glue("'{is}'") else is
+    where_quoted <- if (is.character(where)) glue::glue('"{where}"') else where
 
     # Generate the SQL delete statement
-    where_clause <- sprintf("%s = %s", where, where_quoted)
+    where_clause <- sprintf("%s = %s", where_quoted, is_quoted)
     sql <- sprintf("DELETE FROM %s WHERE %s", table_quoted, where_clause)
     sql_all <- sprintf("DELETE FROM %s", table_quoted)
 
@@ -64,7 +65,10 @@ delete_clause <- function(con, table, where, is, all=FALSE,exec = TRUE) {
     }
 
 }
-
+# delete_clause(db_con,table = "t_Outstanding",where = "id",
+#               is = 185137,exec = F)
+# delete_clause(db_con,'t_Outstanding',where = 'allocation_id',
+#               is = 185137,all = F,exec = F)
 #' Generate SQL insert statement
 #'
 #' @description Generates an SQL insert statement for a given table and values.

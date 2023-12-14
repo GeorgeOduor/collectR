@@ -519,3 +519,19 @@ passwd_generator <- function(length = 8) {
     return(random_pass)
 }
 
+
+#' Check if a date is the last day of the month
+#'
+#' This function takes a date as input and checks if it is the last day of the month.
+#'
+#' @param reportDate A date in the format "YYYY-MM-DD" to be checked.
+#'
+#' @return Logical value: TRUE if the input date is the last day of the month, FALSE otherwise.
+#'
+#' @importFrom lubridate ceiling_date
+#'
+#' @keywords date last day month
+is_endMonth <- function(reportDate) {
+    # Function body
+    ceiling_date(reportDate, "month") - 1 == reportDate
+}

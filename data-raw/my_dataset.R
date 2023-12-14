@@ -10,3 +10,5 @@ credentials <- data.frame(
     stringsAsFactors = FALSE
 )
 usethis::use_data(credentials, overwrite = TRUE)
+# summary_template = current_day %>% head(0)
+usethis::use_data(summary_template, overwrite = T)

@@ -1,0 +1,76 @@
+---
+name: George
+surname: Oduor
+position: "Data Analyst | Statistical Modeling | Financial Industry Expertise"
+address: "P.O.Box 21,Ugunja 46006"
+phone: +254711894704
+www: georgeoduor.com
+email: "george.wamaya@gmail.com"
+github: georgeoduor
+linkedin: georgeoduor
+date: "`r format(Sys.time(), '%B %Y')`"
+output: 
+  vitae::awesomecv:
+    page_total: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(vitae)
+```
+
+Results-driven Data Analyst with a proven track record in quantitative and qualitative data analysis. Specializing in statistical modeling, credit analytics, and financial industry knowledge. Proficient in Python, R, and advanced Excel for data-related projects. Experienced in SQL and database management. Possesses strong leadership, effective communication, and teamwork abilities. Seeking a challenging role as a Business Analyst at Lipa Later to utilize analytical skills in driving performance and process improvements.
+
+# SKILLS
+
+-   **Data Analysis**: Proficient in Python and R programming for data analysis and visualization. Skilled in using R Shiny, ggplot2, plotly, and Python Dash for data visualization.
+
+-   **Database Management**: Hands-on proficiency in relational databases like MySQL and PostgreSQL.
+
+-   **Credit Analytics**: Extensive experience in credit analysis, credit risk assessment, and MOBILE loan underwriting.
+
+-   **Statistical Modeling**: Strong knowledge of statistical modeling techniques, including regression analysis, time series analysis, and hypothesis testing.
+
+-   **Financial Industry Knowledge**: Familiarity with lending and credit best practices, regulatory requirements, and trends in credit analytics.
+
+-   **Project Management:** Experienced in stakeholder management and successful project delivery, coordinating cross-functional teams to meet tight timelines.
+
+-   **Communication and Leadership**: Strong leadership skills with a focus on collaboration and teamwork.
+
+# Education
+
+```{r}
+library(tibble)
+tribble(
+  ~ Degree, ~ Year, ~ Institution, ~ Where,
+  "Bsc Statistics & Programming", "2011-2017", "Kenyatta University", "Nairobi, Kenya",
+  "Certificate in Leadership Development", "2017", "Kenyatta University", "Nairobi, Kenya",
+  "Kenya Certificate of Secondary Education", "2007 - 2010", "Sawagongo High School", "Siaya, Kenya"
+) %>% 
+  detailed_entries(Degree, Year, Institution, Where)
+```
+
+# EXPERIENCE
+
+```{r}
+tribble(
+  ~Year, ~Type, ~Desc,
+  2019 , "Physics", "Awarded for her work on radioactivity with Pierre Curie and Henri Becquerel",
+  1911, "Chemistry", "Awarded for the discovery of radium and polonium"
+) %>% 
+  brief_entries(
+    glue::glue("Nobel Prize in {Type}"),
+    Year, 
+    Desc
+  )
+```
+
+# Publications
+
+```{r}
+library(dplyr)
+knitr::write_bib(c("vitae", "tibble"), "packages.bib")
+
+bibliography_entries("packages.bib") %>%
+  arrange(desc(author$family), issued)
+```

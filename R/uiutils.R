@@ -7,11 +7,19 @@ filterui <- function(ns) {
     dropdown(
         tags$p("List of Input"),
         div(class="title-section-float",
-            pickerInput(inputId = ns("call_agent"),label = "Call Agent",choices = c("George","Oduor","Eric","Mshila","Stephen","Robia"),options = list(title = "Call Agent")),
-            pickerInput(inputId = ns("product"),label = "Product",choices = c('All','M-Fanisi Safaricom','M-Fanisi Airtel','Branch'),options = list(title = "Channel")),
+            uiOutput(ns('agents')),
+            pickerInput(inputId = ns("product"),label = "Product",
+                        choices = c('All'),options = list(title = "Channel")),
             fluidRow(class = "month-year-quater",
-                     col_6(class="left",pickerInput(inputId = ns("year"),label = "Year",choices = c(2019:as.numeric(substr(Sys.Date(),1,4))),options = list(title = "Year"))),
-                     col_6(class="right",(pickerInput(inputId = ns("month"),label = "Month/Quarter",choices = list(Months=month.name,Quarters=paste0("Q",1:4)),options = list(title = "Month/Quarter"),width = "100%")))
+                     col_6(class="left",pickerInput(inputId = ns("year"),label = "Year",
+                                                    choices = NULL,options = list(title = "Year"))),
+                     col_6(class="right",(pickerInput(inputId = ns("month"),
+                                                      label = "Month/Quarter",
+                                                      choices = list(Months=month.name,
+                                                                     Quarters=paste0("Q",1:4)),
+                                                      options = list(title = "Month/Quarter"),
+                                                      width = "100%"))
+                           )
             ),
             pickerInput(inputId = ns("compareby"),label = "Compare to",choices = c("","Last Month","Last Year"))
         ),
@@ -233,36 +241,42 @@ agent_dash <- function(tab1name,tab1content,tab2name,tab2content){
 }
 #' @noRd
 custom_value_box <- function(title,value,trend,trend_icon,trend_text,main_icon) {
-    tags$div(
-        class = "stat-card",
+    tryCatch(
+    expr = {
         tags$div(
-            class = "stat-card__content",
-            tags$p(
-                class = "title-text",
-                title
-            ),
-            tags$h2(class = "value",
-                value
+            class = "stat-card",
+            tags$div(
+                class = "stat-card__content",
+                tags$p(
+                    class = "title-text",
+                    title
+                ),
+                tags$h2(class = "value",
+                        value
+                ),
+                tags$div(
+                    tags$span(
+                        class = "text-danger font-weight-bold mr-1",
+                        trend_icon,
+                        trend
+                    ),
+                    tags$span(
+                        class = "text-muted",
+                        trend_text
+                    )
+                )
             ),
             tags$div(
-                tags$span(
-                    class = "text-danger font-weight-bold mr-1",
-                    icon(trend_icon),
-                    trend
-                ),
-                tags$span(
-                    class = "text-muted",
-                    trend_text
+                class = "stat-card__icon stat-card__icon--primary",
+                tags$div(
+                    class = "stat-card__icon-circle",
+                    icon(main_icon)
                 )
             )
-        ),
-        tags$div(
-            class = "stat-card__icon stat-card__icon--primary",
-            tags$div(
-                class = "stat-card__icon-circle",
-                icon(main_icon)
-            )
         )
+
+
+    }
     )
 }
 
@@ -380,14 +394,170 @@ modal_footer <- function(cancelbutton=F,...) {
         )
     )
 }
+
 #' @noRd
-#' @importFrom shiny HTML
-modal_exit <- function(text="Dismis") {
-    tags$button(
-        type = "button",
-        class = "btn btn-success bttn bttn-material-flat bttn-xs bttn-no-outline",
-        `data-dismiss` = "modal",
-        `data-bs-dismiss` = "modal",
-        text
+#' @importFrom shiny tags
+custom_stats <- function(value,percent,icon,last_item=F) {
+
+    tags$div(
+        class = paste("info-box-content custom",ifelse(last_item,"last-item","")),
+        tags$div(
+            class = "col-sm-2 gender_icon",
+            icon
+        ),
+        tags$div(
+            class = "col-sm-10",
+            tags$div(
+                class = "infobox-value",
+                tags$span(
+                    class = "gender_details",value
+                )
+            ),
+            tags$div(
+                class = "caretstats",
+                tags$span(
+                    class = "description-percentage text-red",
+                    percent
+                )
+            )
+        )
     )
 }
+
+#' @noRd
+#' @importFrom shiny tags
+custom_info_box <- function(title,...) {
+    tags$div(
+        class = "info-box infobox_large_vertical",
+        tags$span(
+            class = "subtitle_gender infobox-title",
+            title
+        ),
+        ...
+    )
+}
+#' @noRd
+#' @importFrom shiny tags
+collection_time_UI <- function(value,title = "Average Recovery Time(Days)") {
+    tags$div(
+        class = "info-box infobox_large_vertical",
+        tags$div(
+            class = "info-box-content custom ",
+            tags$div(
+                class = "col-sm-12",
+                tags$div(
+                    class = "infobox-value",
+                    tags$span(
+                        class = "gender_details_special",
+                        value
+                    )
+                )
+            )
+        ),
+        tags$div(
+            class = "info-box-content custom last-item",
+            tags$div(
+                class = "col-sm-12",
+                tags$div(
+                    class = "infobox-value",
+                    tags$span(
+                        class = "gender_details_desc",
+                        title
+                    )
+                )
+            )
+        )
+    )
+}
+
+
+#' @importFrom plotly ggplotly
+#' @import ggplot2
+gg.gauge <- function(pos,breaks=c(0,30,70,100)) {
+    get.poly <- function(a,b,r1=0.5,r2=1.0) {
+        th.start <- pi*(1-a/100)
+        th.end   <- pi*(1-b/100)
+        th       <- seq(th.start,th.end,length=100)
+        x        <- c(r1*cos(th),rev(r2*cos(th)))
+        y        <- c(r1*sin(th),rev(r2*sin(th)))
+        return(data.frame(x,y))
+    }
+    p = ggplot()+
+        geom_polygon(data=get.poly(breaks[1],breaks[2]),aes(x,y),fill="red")+
+        geom_polygon(data=get.poly(breaks[2],breaks[3]),aes(x,y),fill="gold")+
+        geom_polygon(data=get.poly(breaks[3],breaks[4]),aes(x,y),fill="forestgreen")+
+        geom_polygon(data=get.poly(pos-1,pos+1,0.2),aes(x,y))+
+        geom_text(data=as.data.frame(breaks), size=5, fontface="bold", vjust=0,
+                  aes(x=1.1*cos(pi*(1-breaks/100)),y=1.1*sin(pi*(1-breaks/100)),label=paste0(breaks,"%")))+
+        annotate("text",x=0,y=0,label=pos,vjust=0,size=8,fontface="bold")+
+        coord_fixed()+
+        # theme_bw()+
+        theme(axis.text=element_blank(),
+              axis.title=element_blank(),
+              axis.ticks=element_blank(),
+              panel.grid=element_blank(),
+              panel.border=element_blank())
+    p
+}
+# gg.gauge(4)
+
+#' Calculate Point-to-Point Rate
+#'
+#' This function generates a solid gauge highchart representing a point-to-point rate.
+#'
+#' @param value The point-to-point rate value to be displayed in the gauge.
+#'
+#' @return A highchart object representing the point-to-point rate gauge.
+#'
+#' @import highcharter
+#' @noRd
+ptp_rate <- function(value) {
+    col_stops <- data.frame(
+        q = c(0.15, 0.4, .8),
+        c = c('#DF5353', '#DDDF0D','#55BF3B'),
+        stringsAsFactors = FALSE
+    )
+
+    hcplot <- highchart() %>%
+        hc_chart(type = "solidgauge") %>%
+        hc_pane(
+            startAngle = -90,
+            endAngle = 90,
+            background = list(
+                outerRadius = '100%',
+                innerRadius = '60%',
+                shape = "arc"
+            )
+        ) %>%
+        hc_tooltip(enabled = FALSE) %>%
+        hc_yAxis(
+            stops = list_parse2(col_stops),
+            lineWidth = 0,
+            minorTickWidth = 0,
+            tickAmount = 2,
+            min = 0,
+            max = 100,
+            labels = list(y = 26, style = list(fontSize = "12px"))
+        ) %>%
+        hc_add_series(
+            data = value,
+            dataLabels = list(
+                format = '{y}%',
+                x = 2,
+                y = -50,
+                borderWidth = 0,
+                useHTML = TRUE,
+                style = list(
+                    fontSize = "17px",
+                    position= "absolute",
+                    marginLeft= '3px !important',
+                    marginTop= '28px !important',
+                    left= '5px',
+                    top= '5px'
+                )
+            )
+        ) %>%
+        hc_size(height = 300)
+    return(hcplot)
+}
+# ptp_rate(23)

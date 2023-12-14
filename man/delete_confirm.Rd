@@ -4,7 +4,12 @@
 \alias{delete_confirm}
 \title{Execute an action in the database and show a toast message}
 \usage{
-delete_confirm(text, delete_id, ns)
+delete_confirm(
+  text,
+  delete_id,
+  ns,
+  msg = "This action will remove this record!"
+)
 }
 \arguments{
 \item{text}{The dismisbutton text}

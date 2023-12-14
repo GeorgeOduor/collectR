@@ -22,17 +22,15 @@ sidebar_Server <- function(id) {
                              #             icon = icon("home"),
                              #             tabName = "landingpage"
                              #         ),
+                             menuItem(
+                                 text = "Collection Dashboard",
+                                 icon = icon("chart-line"),
+                                 tabName = "agent_performance"
+                             ),
                              # menuItem(
-                             #     text = "Collection Analytics",
-                             #     icon = icon("dashboard"),
-                             #     menuSubItem("Collections Summary", tabName = "overalcolletions"),
-                             #     menuSubItem("Internal Agents Report", tabName = "callagents"),
-                             #     menuSubItem("External Agents Report", tabName = "extdebtcol")
-                             # ),
-                             # menuItem(
-                             #     text = "My Performance",
-                             #     icon = icon("chart-line"),
-                             #     tabName = "agent_performance"
+                             #     text = "Collection Dashboard",
+                             #     icon = icon("shuffle"),
+                             #     tabName = "allocation_tab"
                              # ),
                              menuItem(
                                  text = "Client Information",
@@ -42,9 +40,9 @@ sidebar_Server <- function(id) {
                              menuItem(
                                  text = "Admin",
                                  icon = icon("gears"),
-                                 # menuSubItem("Agents Management", tabName = "agentmanagement")
-                                 # menuSubItem("Allocation", tabName = "allocation_tab",),
-                                 menuSubItem("Performance Update", tabName = "performance"),
+                                 menuSubItem("Agents Management", tabName = "agentmanagement"),
+                                 menuSubItem("Allocation", tabName = "allocation_tab",icon =  icon("shuffle")),
+                                 # menuSubItem("Performance Update", tabName = "performance"),
                                  menuSubItem(
                                      text = "Settings",
                                      icon = icon("gears"),

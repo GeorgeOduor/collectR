@@ -9,9 +9,9 @@
 body_ui <- function(tabset=NULL) {
     tabItems(
         tabItem("landingpage",landingPage_UI("landingpage-ux")),
-        tabItem("overalcolletions",collection_dashboard_UI("collections")),
-        tabItem("callagents", internalAgentsDash_UI("agent_dash")),
-        tabItem("extdebtcol", dca_dashboard_UI("dca_dash")),
+        # tabItem("overalcolletions",collection_dashboard_UI("collections")),
+        # tabItem("callagents", internalAgentsDash_UI("agent_dash")),
+        # tabItem("extdebtcol", dca_dashboard_UI("dca_dash")),
         tabItem("agent_performance", agentPerformanceDashboard_UI("agent_performance")),
         tabItem("clientprofile", clientProfile_UI("clientprofile")),
         # administrative
