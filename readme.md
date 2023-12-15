@@ -1,16 +1,24 @@
 # collectR
 
-![](inst/app/www/collectoR.png){width="123"}
+```{r, echo=FALSE, out.width="50%", fig.cap="A nice image."}
+
+knitr::include_graphics("inst/app/www/collectoR.png")
+```
+
+# *collectR*
 
 *collectR* is an advanced debt collection management application developed using R and Shiny. The primary goal is to streamline debt collection data management, providing a user-friendly interface for effortless monitoring and continuous improvement.
 
 ## Installation
 
-To install *collectR*, execute the following R code:
+To install *collectR* from GitHub, use the following R code:
 
 ``` r
-install.packages("collectR")
+# install.packages("remotes") # Uncomment and run if 'remotes' package is not installed
+remotes::install_github("georgeoduor/collectR")
 ```
+
+Replace "your_username" with the actual GitHub username/repository where *collectR* is hosted.
 
 ## Features and Services
 
